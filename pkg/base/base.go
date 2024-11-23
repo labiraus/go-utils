@@ -26,6 +26,11 @@ func Init(serviceName string) context.Context {
 		slog.Info("got signal: [" + s.String() + "] now closing")
 	}()
 
+	go func() {
+		<-Ready
+		slog.Info("ready")
+	}()
+
 	return ctx
 }
 

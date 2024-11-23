@@ -6,13 +6,19 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/labiraus/go-utils/pkg/api"
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
-//go:embed html
-var content embed.FS
+var (
+	//go:embed static
+	static embed.FS
+	//go:embed dynamic
+	dynamic embed.FS
+	tmpl    *template.Template
+)
 
 func main() {
 	var err error
@@ -26,12 +32,27 @@ func main() {
 		}
 	}()
 	ctx := base.Init("webserver")
+
+	tmpl, err = template.ParseFS(dynamic, "dynamic/*.tmpl")
+	if err != nil {
+		return
+	}
 	mux := http.NewServeMux()
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(content))))
+	mux.HandleFunc("/", serveDynamic)
+	mux.Handle("/static/", http.FileServer(http.FS(static)))
 	done := api.Init(ctx, mux)
 
-	template.ParseFS(content, "*.tmpl")
 	close(base.Ready)
 	<-done
 	slog.Info("finishing")
+}
+
+type PageData struct {
+	Title string
+	Year  int
+}
+
+func serveDynamic(w http.ResponseWriter, r *http.Request) {
+	data := PageData{Title: "Dynamic Content", Year: time.Now().Year()}
+	tmpl.Execute(w, data)
 }
