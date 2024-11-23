@@ -1,0 +1,25 @@
+go 1.23.3
+
+use (
+	./cmd/helloapi
+	./cmd/userapi
+	./cmd/webserver
+	./pkg/api
+	./pkg/base
+	./pkg/kubernetesutil
+	./pkg/prometheusutil
+	./pkg/pubsubutil
+	./pkg/redisutil
+)
+
+replace github.com/labiraus/go-utils/pkg/base v0.0.0 => ./pkg/base
+
+replace github.com/labiraus/go-utils/pkg/api v0.0.0 => ./pkg/api
+
+replace github.com/labiraus/go-utils/pkg/kubernetesutil v0.0.0 => ./pkg/kubernetesutil
+
+replace github.com/labiraus/go-utils/pkg/prometheusutil v0.0.0 => ./pkg/prometheusutil
+
+replace github.com/labiraus/go-utils/pkg/pubsubutil v0.0.0 => ./pkg/pubsubutil
+
+replace github.com/labiraus/go-utils/pkg/redisutil v0.0.0 => ./pkg/redisutil

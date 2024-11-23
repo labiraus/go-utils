@@ -1,4 +1,4 @@
-module userapi
+module github.com/labiraus/go-utils/cmd/userapi
 
 go 1.23.3
 
@@ -54,11 +54,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-replace github.com/labiraus/go-utils/pkg/api => ../../pkg/api
-
-replace github.com/labiraus/go-utils/pkg/base => ../../pkg/base
-
-replace github.com/labiraus/go-utils/pkg/kubernetesutil => ../../pkg/kubernetesutil
-
-replace github.com/labiraus/go-utils/pkg/prometheusutil => ../../pkg/prometheusutil

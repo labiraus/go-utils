@@ -26,9 +26,9 @@ func main() {
 		}
 	}()
 	ctx := base.Init("webserver")
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(content))))
 	done := api.Init(ctx)
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(content))))
 	template.ParseFS(content, "*.tmpl")
 	close(base.Ready)
 	<-done

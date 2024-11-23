@@ -21,12 +21,15 @@ var configValue string
 
 func main() {
 	ctx := base.Init("goapi")
-	done := api.Init(ctx)
 	prometheusutil.Init()
 	configValue = base.GetEnv("configValue", "unknown")
+
 	http.HandleFunc("/hello", helloHandler)
-	close(base.Ready)
 	http.HandleFunc("/go/benchmarking", benchmarking)
+
+	done := api.Init(ctx)
+
+	close(base.Ready)
 	<-done
 	slog.Info("finishing")
 }

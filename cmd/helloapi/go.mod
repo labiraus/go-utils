@@ -1,4 +1,4 @@
-module github.com/labiraus/go-utils/pkg/cmd/helloapi
+module github.com/labiraus/go-utils/cmd/helloapi
 
 go 1.23.3
 
@@ -18,9 +18,3 @@ require (
 	golang.org/x/sys v0.25.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
-
-replace github.com/labiraus/go-utils/pkg/api => ../../pkg/api
-
-replace github.com/labiraus/go-utils/pkg/base => ../../pkg/base
-
-replace github.com/labiraus/go-utils/pkg/prometheusutil => ../../pkg/prometheusutil

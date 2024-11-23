@@ -37,7 +37,6 @@ func main() {
 		}
 	}()
 	ctx := base.Init("userapi")
-	done := api.Init(ctx)
 	prometheusutil.Init()
 	kubeAccess, err = kubernetesutil.Init()
 	if err != nil {
@@ -48,6 +47,8 @@ func main() {
 	}
 
 	http.HandleFunc("/user", userHandler)
+
+	done := api.Init(ctx)
 	close(base.Ready)
 	<-done
 	slog.Info("finishing")
