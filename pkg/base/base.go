@@ -12,13 +12,12 @@ var (
 	ServiceName string
 )
 
-func Init(serviceName string) (context.Context, <-chan struct{}) {
+func Init(serviceName string) context.Context {
 	ServiceName = serviceName
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})).WithGroup(serviceName))
 	slog.Info("starting")
 	ctx, ctxDone := context.WithCancel(context.Background())
 
-	done := make(chan struct{})
 	go func() {
 		defer ctxDone()
 		c := make(chan os.Signal, 1)
@@ -27,7 +26,7 @@ func Init(serviceName string) (context.Context, <-chan struct{}) {
 		slog.Info("got signal: [" + s.String() + "] now closing")
 	}()
 
-	return ctx, done
+	return ctx
 }
 
 func GetEnv(key, fallback string) string {

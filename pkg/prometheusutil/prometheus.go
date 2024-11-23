@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/labiraus/go-utils/base"
+	"github.com/labiraus/go-utils/pkg/base"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"

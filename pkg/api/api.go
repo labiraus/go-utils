@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/labiraus/go-utils/base"
+	"github.com/labiraus/go-utils/pkg/base"
 )
 
 func Init(ctx context.Context) <-chan struct{} {
