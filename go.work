@@ -1,8 +1,8 @@
 go 1.23.3
 
 use (
-	./cmd/helloapi
-	./cmd/userapi
+	./cmd/basicapi
+	./cmd/basicrepl
 	./cmd/webserver
 	./pkg/api
 	./pkg/base
@@ -10,6 +10,7 @@ use (
 	./pkg/prometheusutil
 	./pkg/pubsubutil
 	./pkg/redisutil
+	./pkg/repl
 )
 
 replace github.com/labiraus/go-utils/pkg/base v0.0.0 => ./pkg/base
@@ -23,3 +24,5 @@ replace github.com/labiraus/go-utils/pkg/prometheusutil v0.0.0 => ./pkg/promethe
 replace github.com/labiraus/go-utils/pkg/pubsubutil v0.0.0 => ./pkg/pubsubutil
 
 replace github.com/labiraus/go-utils/pkg/redisutil v0.0.0 => ./pkg/redisutil
+
+replace github.com/labiraus/go-utils/pkg/repl v0.0.0 => ./pkg/repl

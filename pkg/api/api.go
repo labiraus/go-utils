@@ -8,11 +8,14 @@ import (
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
-func Init(ctx context.Context) <-chan struct{} {
+func Init(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
+	mux.HandleFunc("/readiness", readinessHandler)
+	mux.HandleFunc("/liveness", livelinessHandler)
 	done := make(chan struct{})
-	srv := &http.Server{Addr: "0.0.0.0:8080"}
-	http.HandleFunc("/readiness", readinessHandler)
-	http.HandleFunc("/liveness", livelinessHandler)
+	srv := &http.Server{
+		Addr:    "0.0.0.0:8080",
+		Handler: mux,
+	}
 
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {

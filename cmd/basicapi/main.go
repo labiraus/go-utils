@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	userHandlerLabel = "userHandler"
+	helloHandlerLabel = "helloHandler"
 )
 
 var (
@@ -36,8 +36,13 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	ctx := base.Init("userapi")
-	prometheusutil.Init()
+	ctx := base.Init("basicapi")
+
+	mux := http.NewServeMux()
+	prometheusutil.Init(mux)
+	mux.HandleFunc("/hello", helloHandler)
+	done := api.Init(ctx, mux)
+
 	kubeAccess, err = kubernetesutil.Init()
 	if err != nil {
 		return
@@ -45,19 +50,15 @@ func main() {
 	if !kubeAccess {
 		slog.Info("kubernetes access not available")
 	}
-
-	http.HandleFunc("/user", userHandler)
-
-	done := api.Init(ctx)
 	close(base.Ready)
 	<-done
 	slog.Info("finishing")
 }
 
-func userHandler(w http.ResponseWriter, r *http.Request) {
+func helloHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	startTime := time.Now() // Capture the start time
-	prometheusutil.IncrementProcessed(userHandlerLabel, "call")
+	prometheusutil.IncrementProcessed(helloHandlerLabel, "call")
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -65,12 +66,12 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if err != nil {
 			slog.Error(err.Error())
-			prometheusutil.IncrementProcessed(userHandlerLabel, "error")
+			prometheusutil.IncrementProcessed(helloHandlerLabel, "error")
 		}
-		prometheusutil.OpDuration(userHandlerLabel, time.Since(startTime))
+		prometheusutil.OpDuration(helloHandlerLabel, time.Since(startTime))
 	}()
 
-	slog.Info("userHandler called")
+	slog.Info(helloHandlerLabel + "called")
 
 	var request = UserRequest{}
 	body, err := io.ReadAll(r.Body)

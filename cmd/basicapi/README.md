@@ -1,4 +1,4 @@
-# userapi
+# basicapi
 
 This is a simple golang api designed to be run in a kuberenetes cluster.
 
@@ -8,9 +8,9 @@ This is a simple golang api designed to be run in a kuberenetes cluster.
 
 ## Endpoints
 
-### /user
+### /hello
 
-Dummy user lookup endpoint - always returns username "a nonny mouse" and email "something@somewhere.com"
+Dummy user lookup endpoint - always returns username based on kubernetes secret if available and email "something@somewhere.com"
 
 #### Request
 
@@ -30,4 +30,10 @@ Dummy user lookup endpoint - always returns username "a nonny mouse" and email "
     "username": "string",
     "email": "string,"
 }
+```
+
+#### Curl
+
+``` bash
+curl -X POST http://localhost:8080/hello -d '{"userid": 1}'
 ```
