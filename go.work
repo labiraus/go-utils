@@ -3,6 +3,8 @@ go 1.23.3
 use (
 	./cmd/basicapi
 	./cmd/basicrepl
+	./cmd/example
+	./cmd/kvstore
 	./cmd/webserver
 	./pkg/api
 	./pkg/base
