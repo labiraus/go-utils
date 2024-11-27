@@ -35,12 +35,12 @@ func startApi(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
 	// middleware
 	// authentication
 	mux.HandleFunc("/", handle)
-	done := actor(requests, ctx)
+	done := actor(ctx, requests)
 
 	return done
 }
 
-func actor(requests chan apiRequest, ctx context.Context) <-chan struct{} {
+func actor(ctx context.Context, requests chan apiRequest) <-chan struct{} {
 	done := make(chan struct{})
 	// Shutdown
 	go func() {
