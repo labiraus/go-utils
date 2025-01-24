@@ -16,23 +16,25 @@ var (
 	ServiceName string
 )
 
-type ContextHandler struct {
+type customHandler struct {
 	slog.Handler
 }
 
-func (h *ContextHandler) Handle(ctx context.Context, r slog.Record) error {
+func (h *customHandler) Handle(ctx context.Context, r slog.Record) error {
 	if traceID, ok := ctx.Value(TraceIDString).(string); ok {
 		r.AddAttrs(slog.String(TraceIDString, traceID))
+	}
+	if traceID, ok := ctx.Value(TraceIDString).(uuid.UUID); ok {
+		r.AddAttrs(slog.String(TraceIDString, traceID.String()))
 	}
 	return h.Handler.Handle(ctx, r)
 }
 
 func Init(serviceName string) context.Context {
 	ServiceName = serviceName
-
 	baseHandler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})
-	handler := &ContextHandler{Handler: baseHandler}
-	logger := slog.New(handler).WithGroup(serviceName)
+	handler := &customHandler{Handler: baseHandler.WithGroup(serviceName)}
+	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
 	ctx, ctxDone := context.WithCancel(context.Background())

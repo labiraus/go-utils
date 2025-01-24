@@ -5,16 +5,18 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
 func Init(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
 	mux.HandleFunc("/readiness", readinessHandler)
 	mux.HandleFunc("/liveness", livelinessHandler)
+
 	done := make(chan struct{})
 	srv := &http.Server{
 		Addr:    "0.0.0.0:8080",
-		Handler: mux,
+		Handler: traceIDMiddleware(mux),
 	}
 
 	go func() {
@@ -32,6 +34,13 @@ func Init(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
 		}
 	}()
 	return done
+}
+
+func traceIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.WithContext(context.WithValue(r.Context(), base.TraceIDString, uuid.New()))
+		next.ServeHTTP(w, r)
+	})
 }
 
 func readinessHandler(w http.ResponseWriter, r *http.Request) {

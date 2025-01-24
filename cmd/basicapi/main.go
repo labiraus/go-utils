@@ -27,20 +27,21 @@ var (
 
 func main() {
 	var err error
+	ctx := base.Init("basicapi")
 	defer func() {
-		r := recover()
-		if r != nil {
-			err = fmt.Errorf("panic: %v", r)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(ctx, err.Error())
 		}
 	}()
-	ctx := base.Init("basicapi")
 
 	mux := http.NewServeMux()
 	prometheusutil.Init(mux)
 	mux.HandleFunc("/hello", helloHandler)
+
 	done := api.Init(ctx, mux)
 
 	kubeAccess, err = kubernetesutil.Init()
@@ -48,11 +49,11 @@ func main() {
 		return
 	}
 	if !kubeAccess {
-		slog.Info("kubernetes access not available")
+		slog.InfoContext(ctx, "kubernetes access not available")
 	}
 	close(base.Ready)
 	<-done
-	slog.Info("finishing")
+	slog.InfoContext(ctx, "finishing")
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,18 +61,18 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now() // Capture the start time
 	prometheusutil.IncrementProcessed(helloHandlerLabel, "call")
 	defer func() {
-		r := recover()
-		if r != nil {
-			err = fmt.Errorf("panic: %v", r)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(r.Context(), err.Error())
 			prometheusutil.IncrementProcessed(helloHandlerLabel, "error")
 		}
 		prometheusutil.OpDuration(helloHandlerLabel, time.Since(startTime))
 	}()
 
-	slog.Info(helloHandlerLabel + "called")
+	slog.InfoContext(r.Context(), helloHandlerLabel+"called")
 
 	var request = UserRequest{}
 	body, err := io.ReadAll(r.Body)
@@ -92,7 +93,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 	secretValue, ok := c.Get("secretValue")
 	if !ok {
-		slog.Debug("reloading secret configValue")
+		slog.DebugContext(r.Context(), "reloading secret configValue")
 		if !kubeAccess {
 			secretValue = "no secret"
 		} else {

@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/labiraus/go-utils/pkg/api"
@@ -32,8 +34,6 @@ func main() {
 func startApi(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
 	requests := make(chan apiRequest, 10)
 	requestBuffer = requests
-	// middleware
-	// authentication
 	mux.HandleFunc("/", handle)
 	done := actor(ctx, requests)
 
@@ -85,12 +85,16 @@ func processLoop(requests <-chan apiRequest) <-chan struct{} {
 	return done
 }
 
-func handle(rw http.ResponseWriter, r *http.Request) {
+func handle(w http.ResponseWriter, r *http.Request) {
+	var err error
 	defer func() {
-		r := recover()
-		if r != nil {
-			log.Println(r)
-			rw.WriteHeader(http.StatusInternalServerError)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
+		}
+		if err != nil {
+			slog.ErrorContext(r.Context(), err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}()
 
@@ -100,8 +104,7 @@ func handle(rw http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(io.Reader(r.Body))
 		defer r.Body.Close()
 		if err != nil {
-			log.Println(err)
-			rw.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		request.value = body
@@ -110,22 +113,22 @@ func handle(rw http.ResponseWriter, r *http.Request) {
 	select {
 	case requestBuffer <- request:
 	default:
-		log.Println("request buffer full or shutdown")
-		rw.WriteHeader(http.StatusServiceUnavailable)
+		slog.WarnContext(r.Context(), "request buffer full or shutdown")
+		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
 
 	response, ok := <-responseChan
 
 	if r.Method != http.MethodGet {
-		rw.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
 	if ok {
-		rw.WriteHeader(http.StatusOK)
-		rw.Write(response)
+		w.WriteHeader(http.StatusOK)
+		w.Write(response)
 	} else {
-		rw.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

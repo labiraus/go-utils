@@ -14,16 +14,16 @@ import (
 
 func main() {
 	var err error
+	ctx := base.Init("todoapi")
 	defer func() {
 		r := recover()
 		if r != nil {
 			err = fmt.Errorf("panic: %v", r)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(ctx, err.Error())
 		}
 	}()
-	ctx := base.Init("todoapi")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /todo", postHandler)
@@ -36,22 +36,22 @@ func main() {
 
 	close(base.Ready)
 	<-done
-	slog.Info("finishing")
+	slog.InfoContext(ctx, "finishing")
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	defer func() {
-		r := recover()
-		if r != nil {
-			err = fmt.Errorf("panic: %v", r)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(r.Context(), err.Error())
 		}
 	}()
 
-	slog.Info("post called")
+	slog.InfoContext(r.Context(), "post called")
 
 	var request = postRequest{}
 	body, err := io.ReadAll(r.Body)
@@ -72,16 +72,16 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 func getHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	defer func() {
-		r := recover()
-		if r != nil {
-			err = fmt.Errorf("panic: %v", r)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(r.Context(), err.Error())
 		}
 	}()
 
-	slog.Info("get called")
+	slog.InfoContext(r.Context(), "get called")
 
 	var request = todo.User{}
 	body, err := io.ReadAll(r.Body)
@@ -114,16 +114,16 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	defer func() {
-		r := recover()
-		if r != nil {
-			err = fmt.Errorf("panic: %v", r)
+		p := recover()
+		if p != nil {
+			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.Error(err.Error())
+			slog.ErrorContext(r.Context(), err.Error())
 		}
 	}()
 
-	slog.Info("delete called")
+	slog.InfoContext(r.Context(), "delete called")
 
 	var request = postRequest{}
 	body, err := io.ReadAll(r.Body)
