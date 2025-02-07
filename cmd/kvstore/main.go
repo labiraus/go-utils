@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/labiraus/go-utils/pkg/api"
 	"github.com/labiraus/go-utils/pkg/base"
@@ -21,7 +24,10 @@ type apiRequest struct {
 	response chan<- []byte
 }
 
+var file = flag.String("file", "data.json", "File path for kv store")
+
 func main() {
+	flag.Parse()
 	ctx := base.Init("kvstore")
 	mux := http.NewServeMux()
 	done := startApi(ctx, mux)
@@ -59,8 +65,9 @@ func actor(ctx context.Context, requests chan apiRequest) <-chan struct{} {
 func processLoop(requests <-chan apiRequest) <-chan struct{} {
 	done := make(chan struct{})
 	go func() {
-		store := make(map[string][]byte)
+		store := load()
 		defer close(done)
+		defer save(store)
 		for req := range requests {
 			switch req.verb {
 			case http.MethodDelete:
@@ -111,9 +118,13 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	select {
+	case <-r.Context().Done():
+		slog.WarnContext(r.Context(), "shutdown")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		return
 	case requestBuffer <- request:
 	default:
-		slog.WarnContext(r.Context(), "request buffer full or shutdown")
+		slog.WarnContext(r.Context(), "request buffer full")
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
@@ -131,4 +142,33 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func save(data map[string][]byte) {
+	file, err := os.Create(*file)
+	if err != nil {
+		log.Fatalf("failed to create file: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	if err := encoder.Encode(data); err != nil {
+		log.Fatalf("failed to encode data: %v", err)
+	}
+}
+
+func load() map[string][]byte {
+	data := make(map[string][]byte)
+	file, err := os.Open(*file)
+	if err != nil {
+		log.Printf("failed to open file: %v", err)
+		return data
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&data); err != nil {
+		log.Printf("failed to decode data: %v", err)
+	}
+	return data
 }

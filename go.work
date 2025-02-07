@@ -4,6 +4,7 @@ use (
 	./cmd/basicapi
 	./cmd/basicrepl
 	./cmd/example
+	./cmd/lambda
 	./cmd/kvstore
 	./cmd/todoapi
 	./cmd/webserver
