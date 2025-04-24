@@ -38,7 +38,7 @@ func Init(serviceName string) context.Context {
 	slog.SetDefault(logger)
 
 	ctx, ctxDone := context.WithCancel(context.Background())
-	ctx = context.WithValue(ctx, TraceIDString, uuid.New())
+	ctx = context.WithValue(ctx, TraceIDString, uuid.New().String())
 	slog.InfoContext(ctx, "starting")
 	go func() {
 		defer ctxDone()
