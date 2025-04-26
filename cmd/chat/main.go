@@ -135,7 +135,7 @@ func createRoom(room string, ctx context.Context) chatRoom {
 					}
 					delete(users, reg.userID)
 				}
-				ticker.Reset(0)
+				ticker.Reset(10 * time.Second)
 
 			case message := <-inbound:
 				for userID, user := range users {
@@ -149,7 +149,7 @@ func createRoom(room string, ctx context.Context) chatRoom {
 						}
 					}
 				}
-				ticker.Reset(0)
+				ticker.Reset(10 * time.Second)
 
 			case <-ticker.C:
 				if len(users) == 0 {
