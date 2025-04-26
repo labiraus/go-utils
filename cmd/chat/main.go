@@ -103,7 +103,8 @@ func roomController(ctx context.Context) chan struct{} {
 	return done
 }
 
-func createRoom(room string, ctx context.Context) chatRoom {
+func createRoom(roomName string, ctx context.Context) chatRoom {
+	slog.InfoContext(ctx, "creating room", "roomName", roomName)
 	registrations := make(chan registration)
 	done := make(chan struct{})
 
@@ -128,11 +129,13 @@ func createRoom(room string, ctx context.Context) chatRoom {
 				if reg.add {
 					users[reg.userID] = reg.outbound
 					reg.inbound <- inbound
+					slog.InfoContext(ctx, "registering user", "userID", reg.userID, "roomName", reg.roomName)
 				} else {
 					user, ok := users[reg.userID]
 					if ok {
 						close(user)
 					}
+					slog.InfoContext(ctx, "deregistering user", "userID", reg.userID, "roomName", reg.roomName)
 					delete(users, reg.userID)
 				}
 				ticker.Reset(10 * time.Second)
@@ -154,7 +157,7 @@ func createRoom(room string, ctx context.Context) chatRoom {
 			case <-ticker.C:
 				if len(users) == 0 {
 					close(registrations)
-					slog.InfoContext(ctx, "cleanup", "room", room)
+					slog.InfoContext(ctx, "cleanup", "room", roomName)
 					return
 				}
 			}
@@ -163,24 +166,21 @@ func createRoom(room string, ctx context.Context) chatRoom {
 
 	return chatRoom{
 		registrations: registrations,
-		roomName:      room,
+		roomName:      roomName,
 		done:          done,
 	}
 }
 
 func websocketHandler(w http.ResponseWriter, r *http.Request) {
+	userID := uuid.New()
+	slog.InfoContext(r.Context(), "recieved connection", "userID", userID)
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, "Could not upgrade to websocket", http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
-
-	userID, err := uuid.NewUUID()
-	if err != nil {
-		http.Error(w, "Failed to generate user ID", http.StatusInternalServerError)
-		return
-	}
 
 	outbound := make(chan string, 100)
 	inboundCarrier := make(chan chan<- chatMessage, 1)

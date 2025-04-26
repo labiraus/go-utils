@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -106,11 +109,21 @@ func TestRoomController(t *testing.T) {
 }
 
 func TestWebsocketHandler(t *testing.T) {
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 	server := httptest.NewServer(http.HandlerFunc(websocketHandler))
 	defer server.Close()
-
+	roomController(context.Background())
+	outbound := make(chan string, 10)
+	registrationChan <- registration{
+		add:      true,
+		userID:   uuid.Max,
+		outbound: outbound,
+		inbound:  make(chan<- chan<- chatMessage, 1),
+		roomName: "/test",
+	}
 	// Convert the test server URL to a WebSocket URL
-	wsURL := "ws" + server.URL[len("http"):]
+	wsURL := "ws" + server.URL[len("http"):] + "/test"
+	fmt.Println(wsURL)
 
 	// Connect to the WebSocket server
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
@@ -122,7 +135,6 @@ func TestWebsocketHandler(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Test receiving a message
-	_, message, err := conn.ReadMessage()
-	assert.NoError(t, err)
-	assert.Equal(t, "goodbye", string(message))
+	message := <-outbound
+	assert.Equal(t, "hello", string(message))
 }
