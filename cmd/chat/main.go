@@ -64,6 +64,8 @@ func main() {
 
 func roomController(ctx context.Context) chan struct{} {
 	done := make(chan struct{})
+	roomRegistrations := map[string]chatRoom{}
+	slog.InfoContext(ctx, "starting controller")
 
 	// wg counts how many active rooms there are and allows all rooms to be shut down before
 	var wg sync.WaitGroup
@@ -74,7 +76,6 @@ func roomController(ctx context.Context) chan struct{} {
 	}()
 
 	go func() {
-		roomRegistrations := map[string]chatRoom{}
 		for reg := range registrationChan {
 			room, ok := roomRegistrations[reg.roomName]
 			if !ok {
