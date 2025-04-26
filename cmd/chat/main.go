@@ -14,12 +14,17 @@ import (
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
+type chatMessage struct {
+	text   string
+	userID uuid.UUID
+}
+
 type registration struct {
 	add      bool
 	roomName string
 	userID   uuid.UUID
 	outbound chan<- string
-	inbound  chan<- chan<- string
+	inbound  chan<- chan<- chatMessage
 }
 
 type chatRoom struct {
@@ -106,7 +111,7 @@ func createRoom(room string, ctx context.Context) chatRoom {
 		defer close(done)
 
 		users := map[uuid.UUID]chan<- string{}
-		inbound := make(chan string, 1000)
+		inbound := make(chan chatMessage, 1000)
 
 		// the ticker kills empty channels after 10 sec
 		ticker := time.NewTicker(10 * time.Second)
@@ -124,13 +129,25 @@ func createRoom(room string, ctx context.Context) chatRoom {
 					users[reg.userID] = reg.outbound
 					reg.inbound <- inbound
 				} else {
+					user, ok := users[reg.userID]
+					if ok {
+						close(user)
+					}
 					delete(users, reg.userID)
 				}
 				ticker.Reset(0)
 
 			case message := <-inbound:
-				for _, user := range users {
-					user <- message
+				for userID, user := range users {
+					if userID != message.userID {
+						select {
+						case user <- message.text:
+						default:
+							slog.ErrorContext(ctx, "unable to send messages to user, cutting them off", "userID", userID)
+							close(user)
+							delete(users, userID)
+						}
+					}
 				}
 				ticker.Reset(0)
 
@@ -166,7 +183,7 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	outbound := make(chan string, 100)
-	inboundCarrier := make(chan chan<- string, 1)
+	inboundCarrier := make(chan chan<- chatMessage, 1)
 	defer func() {
 		registrationChan <- registration{
 			add:      false,
@@ -205,7 +222,10 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		strMessage := string(message)
 		if strMessage != "" {
-			inbound <- strMessage
+			inbound <- chatMessage{
+				userID: userID,
+				text:   strMessage,
+			}
 		}
 	}
 }
