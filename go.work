@@ -3,6 +3,7 @@ go 1.23.3
 use (
 	./cmd/basicapi
 	./cmd/basicrepl
+	./cmd/chat
 	./cmd/example
 	./cmd/lambda
 	./cmd/kvstore
