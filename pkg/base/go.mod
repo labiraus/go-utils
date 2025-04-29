@@ -1,3 +1,3 @@
 module github.com/labiraus/go-utils/pkg/base
 
-go 1.23.3
+go 1.24.2

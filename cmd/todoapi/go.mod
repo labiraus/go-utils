@@ -1,6 +1,6 @@
 module github.com/labiraus/go-utils/cmd/todoapi
 
-go 1.23.3
+go 1.24.2
 
 require(
 	github.com/labiraus/go-utils/pkg/api v0.0.0
