@@ -1,6 +1,6 @@
 module github.com/labiraus/go-utils/pkg/kubernetesutil
 
-go 1.24.2
+go 1.24.3
 
 require (
 	k8s.io/api v0.30.2

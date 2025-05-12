@@ -1,3 +1,3 @@
 module github.com/labiraus/go-utils/pkg/todo
 
-go 1.24.2
+go 1.24.3

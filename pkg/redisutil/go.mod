@@ -1,6 +1,6 @@
 module github.com/labiraus/go-utils/pkg/redisutil
 
-go 1.24.2
+go 1.24.3
 
 require (
 	github.com/redis/go-redis/v9 v9.5.3

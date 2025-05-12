@@ -1,9 +1,9 @@
-go 1.24.2
+go 1.24.3
 
 use (
 	./cmd/basicapi
 	./cmd/basicrepl
-	./cmd/chat
+	./cmd/chatserver
 	./cmd/example
 	./cmd/lambda
 	./cmd/kvstore
