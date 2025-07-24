@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package types;
+
+option go_package = "github.com/labiraus/go-utils/cmd/messagefeed/types;types";
+
+message Message {
+  string userId = 1;
+  string message = 2;
+}
+
+message MessageList {
+  repeated Message messages = 1;
+}
+
+message Empty {}
+
+service Store {
+  rpc Save(Message) returns (Empty);
+  rpc GetLast10(Empty) returns (MessageList);
+}

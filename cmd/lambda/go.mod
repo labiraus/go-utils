@@ -9,6 +9,6 @@ require (
 
 require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
