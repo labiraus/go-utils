@@ -58,6 +58,7 @@ func main() {
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
+	var user string
 	startTime := time.Now() // Capture the start time
 	prometheusutil.IncrementProcessed(helloHandlerLabel, "call")
 	defer func() {
@@ -66,7 +67,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.ErrorContext(r.Context(), err.Error())
+			slog.ErrorContext(r.Context(), err.Error(), "user", user)
 			prometheusutil.IncrementProcessed(helloHandlerLabel, "error")
 		}
 		prometheusutil.OpDuration(helloHandlerLabel, time.Since(startTime))
@@ -110,6 +111,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(response)
 	if err != nil {
+		err = fmt.Errorf("error marshalling json response: %v", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

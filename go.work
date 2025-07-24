@@ -5,8 +5,8 @@ use (
 	./cmd/basicrepl
 	./cmd/chatserver
 	./cmd/example
-	./cmd/lambda
 	./cmd/kvstore
+	./cmd/lambda
 	./cmd/todoapi
 	./cmd/webserver
 	./pkg/api

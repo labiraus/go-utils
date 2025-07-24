@@ -159,14 +159,14 @@ func save(data map[string][]byte) {
 
 func load() map[string][]byte {
 	data := make(map[string][]byte)
-	file, err := os.Open(*file)
+	fileThing, err := os.Open(*file)
 	if err != nil {
 		log.Printf("failed to open file: %v", err)
 		return data
 	}
-	defer file.Close()
+	defer fileThing.Close()
 
-	decoder := json.NewDecoder(file)
+	decoder := json.NewDecoder(fileThing)
 	if err := decoder.Decode(&data); err != nil {
 		log.Printf("failed to decode data: %v", err)
 	}

@@ -24,9 +24,6 @@ func (h *customHandler) Handle(ctx context.Context, r slog.Record) error {
 	if traceID, ok := ctx.Value(TraceIDString).(string); ok {
 		r.AddAttrs(slog.String(TraceIDString, traceID))
 	}
-	if traceID, ok := ctx.Value(TraceIDString).(uuid.UUID); ok {
-		r.AddAttrs(slog.String(TraceIDString, traceID.String()))
-	}
 	return h.Handler.Handle(ctx, r)
 }
 
