@@ -7,6 +7,10 @@ use (
 	./cmd/example
 	./cmd/kvstore
 	./cmd/lambda
+	./cmd/messagefeed/client
+	./cmd/messagefeed/server
+	./cmd/messagefeed/store
+	./cmd/messagefeed/types
 	./cmd/todoapi
 	./cmd/webserver
 	./pkg/api
@@ -18,19 +22,3 @@ use (
 	./pkg/repl
 	./pkg/todo
 )
-
-replace github.com/labiraus/go-utils/pkg/base v0.0.0 => ./pkg/base
-
-replace github.com/labiraus/go-utils/pkg/api v0.0.0 => ./pkg/api
-
-replace github.com/labiraus/go-utils/pkg/kubernetesutil v0.0.0 => ./pkg/kubernetesutil
-
-replace github.com/labiraus/go-utils/pkg/prometheusutil v0.0.0 => ./pkg/prometheusutil
-
-replace github.com/labiraus/go-utils/pkg/pubsubutil v0.0.0 => ./pkg/pubsubutil
-
-replace github.com/labiraus/go-utils/pkg/redisutil v0.0.0 => ./pkg/redisutil
-
-replace github.com/labiraus/go-utils/pkg/repl v0.0.0 => ./pkg/repl
-
-replace github.com/labiraus/go-utils/pkg/todo v0.0.0 => ./pkg/todo

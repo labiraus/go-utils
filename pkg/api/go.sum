@@ -1,0 +1,4 @@
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/labiraus/go-utils/pkg/base v0.0.0-20250724115032-2ddb5ef39f50 h1:9DH0aMyzYtlrXOwjyqLqO7bUBkAh4p5782q5AwApmcI=
+github.com/labiraus/go-utils/pkg/base v0.0.0-20250724115032-2ddb5ef39f50/go.mod h1:yqTWFAggAioTDn09VD23D7IWSwuip3qWEJ9NFr4XlLE=
