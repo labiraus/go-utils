@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -9,13 +10,13 @@ import (
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
-func Init(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
+func Init(ctx context.Context, mux *http.ServeMux, port int) <-chan struct{} {
 	mux.HandleFunc("/readiness", readinessHandler)
 	mux.HandleFunc("/liveness", livelinessHandler)
 
 	done := make(chan struct{})
 	srv := &http.Server{
-		Addr:    "0.0.0.0:8080",
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 		Handler: contextMiddleware(ctx, traceIDMiddleware(mux)),
 	}
 

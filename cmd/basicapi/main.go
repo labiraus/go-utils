@@ -42,7 +42,7 @@ func main() {
 	prometheusutil.Init(mux)
 	mux.HandleFunc("/hello", helloHandler)
 
-	done := api.Init(ctx, mux)
+	done := api.Init(ctx, mux, 8080)
 
 	kubeAccess, err = kubernetesutil.Init()
 	if err != nil {

@@ -57,7 +57,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", websocketHandler)
 	done := roomController(ctx)
-	api.Init(ctx, mux)
+	api.Init(ctx, mux, 8080)
 
 	<-done
 }

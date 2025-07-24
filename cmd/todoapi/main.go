@@ -32,7 +32,7 @@ func main() {
 
 	done := todo.Init(ctx)
 
-	api.Init(ctx, mux)
+	api.Init(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done

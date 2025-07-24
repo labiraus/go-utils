@@ -40,7 +40,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", serveDynamic)
 	mux.Handle("/static/", http.FileServer(http.FS(static)))
-	done := api.Init(ctx, mux)
+	done := api.Init(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done

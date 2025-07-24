@@ -31,7 +31,7 @@ func main() {
 	ctx := base.Init("kvstore")
 	mux := http.NewServeMux()
 	done := startApi(ctx, mux)
-	api.Init(ctx, mux)
+	api.Init(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done
