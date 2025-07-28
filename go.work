@@ -21,4 +21,5 @@ use (
 	./pkg/redisutil
 	./pkg/repl
 	./pkg/todo
+	./pkg/websocketutil
 )

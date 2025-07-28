@@ -34,11 +34,11 @@ func Init(serviceName string) context.Context {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	ctx, ctxDone := context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	ctx = context.WithValue(ctx, TraceIDString, uuid.New().String())
 	slog.InfoContext(ctx, "starting")
 	go func() {
-		defer ctxDone()
+		defer ctxCancel()
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, os.Interrupt)
 		s := <-c
