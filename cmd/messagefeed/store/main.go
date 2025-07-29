@@ -20,14 +20,14 @@ import (
 )
 
 func main() {
-	ctx := base.Init("messagefeed-store")
+	ctx := base.Start("messagefeed-store")
 
 	grpcPort := flag.Int("grpc", 50051, "the GRPC port to listen on")
 	flag.Parse()
 
 	mux := http.NewServeMux()
 	// liveliness and readiness need to be exposed regardless
-	done := api.Init(ctx, mux, 8081)
+	done := api.Start(ctx, mux, 8081)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *grpcPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

@@ -14,7 +14,7 @@ import (
 
 func main() {
 	var err error
-	ctx := base.Init("todoapi")
+	ctx := base.Start("todoapi")
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -30,9 +30,9 @@ func main() {
 	mux.HandleFunc("GET /todo", getHandler)
 	mux.HandleFunc("DELETE /todo", deleteHandler)
 
-	done := todo.Init(ctx)
+	done := todo.Start(ctx)
 
-	api.Init(ctx, mux, 8080)
+	api.Start(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done

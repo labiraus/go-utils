@@ -15,7 +15,7 @@ var port = flag.Int("port", 8080, "the HTTP port to listen to")
 
 func main() {
 	var err error
-	ctx := base.Init("messagefeed-client")
+	ctx := base.Start("messagefeed-client")
 	defer func() {
 		r := recover()
 		if r != nil {

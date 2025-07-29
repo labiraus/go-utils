@@ -20,7 +20,7 @@ type request struct {
 	item        Item
 }
 
-func Init(ctx context.Context) <-chan struct{} {
+func Start(ctx context.Context) <-chan struct{} {
 	done := make(chan struct{})
 	buffer = make(chan request, 100)
 

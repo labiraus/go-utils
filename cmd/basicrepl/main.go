@@ -19,7 +19,7 @@ func main() {
 		{Key: "yes", Description: "agree with me", Action: yes},
 		{Key: "no", Description: "disagree with me", Action: no},
 	}
-	ctx := base.Init("pubsubrepl")
+	ctx := base.Start("pubsubrepl")
 	close(base.Ready)
 	repl.StartReading(ctx)
 	fmt.Println("What's your name?")

@@ -10,7 +10,7 @@ import (
 	"github.com/labiraus/go-utils/pkg/base"
 )
 
-func Init(ctx context.Context, mux *http.ServeMux, port int) <-chan struct{} {
+func Start(ctx context.Context, mux *http.ServeMux, port int) <-chan struct{} {
 	mux.HandleFunc("/readiness", readinessHandler)
 	mux.HandleFunc("/liveness", livelinessHandler)
 

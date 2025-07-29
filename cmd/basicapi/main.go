@@ -27,7 +27,7 @@ var (
 
 func main() {
 	var err error
-	ctx := base.Init("basicapi")
+	ctx := base.Start("basicapi")
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -39,12 +39,12 @@ func main() {
 	}()
 
 	mux := http.NewServeMux()
-	prometheusutil.Init(mux)
+	prometheusutil.Start(mux)
 	mux.HandleFunc("/hello", helloHandler)
 
-	done := api.Init(ctx, mux, 8080)
+	done := api.Start(ctx, mux, 8080)
 
-	kubeAccess, err = kubernetesutil.Init()
+	kubeAccess, err = kubernetesutil.Start()
 	if err != nil {
 		return
 	}
@@ -59,6 +59,7 @@ func main() {
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var user string
+	args := []any{"user", user}
 	startTime := time.Now() // Capture the start time
 	prometheusutil.IncrementProcessed(helloHandlerLabel, "call")
 	defer func() {
@@ -67,7 +68,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 			err = fmt.Errorf("panic: %v", p)
 		}
 		if err != nil {
-			slog.ErrorContext(r.Context(), err.Error(), "user", user)
+			slog.ErrorContext(r.Context(), err.Error(), args...)
 			prometheusutil.IncrementProcessed(helloHandlerLabel, "error")
 		}
 		prometheusutil.OpDuration(helloHandlerLabel, time.Since(startTime))

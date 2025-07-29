@@ -46,7 +46,7 @@ var (
 
 func main() {
 	var err error
-	ctx := base.Init("messagefeed-server")
+	ctx := base.Start("messagefeed-server")
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -64,7 +64,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/listen", webSocketHandler)
 	mux.HandleFunc("/post", messageHandler)
-	api.Init(ctx, mux, *port)
+	api.Start(ctx, mux, *port)
 	conn, err := grpc.NewClient(fmt.Sprintf("%v:%d", host, *grpcPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return

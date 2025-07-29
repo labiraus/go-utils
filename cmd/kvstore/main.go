@@ -28,10 +28,10 @@ var file = flag.String("file", "data.json", "File path for kv store")
 
 func main() {
 	flag.Parse()
-	ctx := base.Init("kvstore")
+	ctx := base.Start("kvstore")
 	mux := http.NewServeMux()
 	done := startApi(ctx, mux)
-	api.Init(ctx, mux, 8080)
+	api.Start(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done

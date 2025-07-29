@@ -39,7 +39,7 @@ var (
 	upgrader         websocket.Upgrader
 )
 
-func InitOutbound(ctx context.Context, origin string) <-chan struct{} {
+func StartOutbound(ctx context.Context, origin string) <-chan struct{} {
 	done := make(chan struct{})
 	if len(origin) > 0 {
 		upgrader = websocket.Upgrader{
@@ -236,7 +236,7 @@ func connect(ctx context.Context, url string, outbound <-chan []byte, wsType int
 				defer conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "goodbye"))
 				for msg := range outbound {
 					if err := conn.WriteMessage(websocket.BinaryMessage, []byte(msg)); err != nil {
-						break
+						return
 					}
 				}
 			}()
@@ -248,6 +248,9 @@ func connect(ctx context.Context, url string, outbound <-chan []byte, wsType int
 			for {
 				_, message, err := conn.ReadMessage()
 				if err != nil {
+					if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+						break
+					}
 					select {
 					case <-ctx.Done():
 					default:

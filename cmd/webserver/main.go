@@ -31,7 +31,7 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	ctx := base.Init("webserver")
+	ctx := base.Start("webserver")
 
 	tmpl, err = template.ParseFS(dynamic, "dynamic/*.tmpl")
 	if err != nil {
@@ -40,7 +40,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", serveDynamic)
 	mux.Handle("/static/", http.FileServer(http.FS(static)))
-	done := api.Init(ctx, mux, 8080)
+	done := api.Start(ctx, mux, 8080)
 
 	close(base.Ready)
 	<-done

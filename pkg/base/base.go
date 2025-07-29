@@ -27,7 +27,7 @@ func (h *customHandler) Handle(ctx context.Context, r slog.Record) error {
 	return h.Handler.Handle(ctx, r)
 }
 
-func Init(serviceName string) context.Context {
+func Start(serviceName string) context.Context {
 	ServiceName = serviceName
 	baseHandler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})
 	handler := &customHandler{Handler: baseHandler.WithGroup(serviceName)}

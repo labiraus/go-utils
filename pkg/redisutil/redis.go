@@ -20,14 +20,14 @@ var Get func(ctx context.Context, key string) *redis.StringCmd
 var Scan func(ctx context.Context, cursor uint64, match string, count int64) *redis.ScanCmd
 var Del func(ctx context.Context, keys ...string) *redis.IntCmd
 
-func Init(ctx context.Context, config map[string]RedisConfig) error {
+func Start(ctx context.Context, config map[string]RedisConfig) error {
 	var err error
 	if len(config) == 1 {
 		for _, v := range config {
-			err = initSingle(ctx, v)
+			err = startSingle(ctx, v)
 		}
 	} else {
-		err = initCluster(ctx, config)
+		err = startCluster(ctx, config)
 	}
 
 	if err != nil {
@@ -49,7 +49,7 @@ func ParseRedisConfig(config map[string]string) (map[string]RedisConfig, error) 
 	return redis, nil
 }
 
-func initCluster(ctx context.Context, config map[string]RedisConfig) error {
+func startCluster(ctx context.Context, config map[string]RedisConfig) error {
 	addrs := make([]string, len(config))
 	for _, v := range config {
 		addrs = append(addrs, v.Host+":"+v.Port)
@@ -70,7 +70,7 @@ func initCluster(ctx context.Context, config map[string]RedisConfig) error {
 	return nil
 }
 
-func initSingle(ctx context.Context, config RedisConfig) error {
+func startSingle(ctx context.Context, config RedisConfig) error {
 	rdb := redis.NewClient(&redis.Options{Addr: config.Host + ":" + config.Port})
 	Set = rdb.Set
 	Get = rdb.Get
