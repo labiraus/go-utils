@@ -44,7 +44,7 @@ func traceIDMiddleware(next http.Handler) http.Handler {
 		if len(traceID) != 0 {
 			r = r.WithContext(context.WithValue(r.Context(), base.TraceIDString, traceID[0]))
 		} else {
-			r = r.WithContext(context.WithValue(r.Context(), base.TraceIDString, uuid.New().String()))
+			r = r.WithContext(context.WithValue(r.Context(), base.TraceIDString, uuid.NewString()))
 		}
 		next.ServeHTTP(w, r)
 	})
