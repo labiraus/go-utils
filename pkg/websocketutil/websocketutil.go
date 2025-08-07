@@ -111,17 +111,18 @@ func serve(mux *http.ServeMux, path string, wsType int) <-chan InboundChan {
 
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		var err error
+		connectionID := uuid.New()
+		args := []any{"connectionID", connectionID}
 		defer func() {
 			p := recover()
 			if p != nil {
 				err = fmt.Errorf("panic: %v", p)
 			}
 			if err != nil {
-				slog.ErrorContext(r.Context(), err.Error())
+				slog.ErrorContext(r.Context(), err.Error(), args...)
 			}
 		}()
-		connectionID := uuid.New()
-		slog.InfoContext(r.Context(), "recieved connection", "connectionID", connectionID)
+		slog.InfoContext(r.Context(), "recieved connection", args...)
 
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {

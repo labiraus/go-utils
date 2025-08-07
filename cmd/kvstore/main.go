@@ -46,17 +46,25 @@ func startApi(ctx context.Context, mux *http.ServeMux) <-chan struct{} {
 	return done
 }
 
-func actor(ctx context.Context, requests chan apiRequest) <-chan struct{} {
+func actor(ctx context.Context, requests <-chan apiRequest) <-chan struct{} {
 	done := make(chan struct{})
+	innerRequests := make(chan apiRequest, 100)
 	// Shutdown
 	go func() {
-		<-ctx.Done()
-		close(requests)
+		defer close(innerRequests)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case req := <-requests:
+				innerRequests <- req
+			}
+		}
 	}()
 
 	go func() {
 		defer close(done)
-		<-processLoop(requests)
+		<-processLoop(innerRequests)
 	}()
 
 	return done

@@ -16,7 +16,9 @@ import (
 	"github.com/labiraus/go-utils/cmd/messagefeed/types"
 	"github.com/labiraus/go-utils/pkg/api"
 	"github.com/labiraus/go-utils/pkg/base"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflections"
 )
 
 func main() {
@@ -34,6 +36,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 	types.RegisterStoreServer(s, &store{})
+	reflections.Register(s)
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
@@ -97,6 +100,7 @@ func (*store) GetLast10(ctx context.Context, in *types.Empty) (*types.MessageLis
 		slog.ErrorContext(ctx, "failed to count lines", "error", err.Error())
 		return nil, err
 	}
+
 	output := types.MessageList{}
 	if lineCount == 0 {
 		return &output, nil

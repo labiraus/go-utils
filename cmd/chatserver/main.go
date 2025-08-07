@@ -44,7 +44,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	var err error
-	ctx := base.Init("chat")
+	ctx := base.Start("chat")
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -57,7 +57,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", websocketHandler)
 	done := roomController(ctx)
-	api.Init(ctx, mux, 8080)
+	api.Start(ctx, mux, 8080)
 
 	<-done
 }
