@@ -5,6 +5,9 @@ go 1.24.3
 require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/labiraus/go-utils/cmd/messagefeed/types v0.0.0-20250807124418-d63fec9fc483
+	github.com/labiraus/go-utils/pkg/api v0.0.0-20250807124418-d63fec9fc483
+	github.com/labiraus/go-utils/pkg/base v0.0.0-20250807124418-d63fec9fc483
 	google.golang.org/grpc v1.74.2
 )
 

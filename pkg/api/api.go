@@ -21,17 +21,17 @@ func Start(ctx context.Context, mux *http.ServeMux, port int) <-chan struct{} {
 	}
 
 	go func() {
+		defer close(done)
+
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			panic("ListenAndServe: " + err.Error())
+			slog.ErrorContext(ctx, "ListenAndServe: "+err.Error())
 		}
 	}()
 
 	go func() {
-		defer close(done)
-
 		<-ctx.Done()
 		if err := srv.Shutdown(ctx); err != nil {
-			slog.Error("Shutdown: " + err.Error())
+			slog.ErrorContext(ctx, "Shutdown: "+err.Error())
 		}
 	}()
 	return done
