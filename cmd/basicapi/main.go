@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"time"
@@ -35,6 +36,7 @@ func main() {
 		}
 		if err != nil {
 			slog.ErrorContext(ctx, err.Error())
+			log.Fatal("Code terminated unexpectedly")
 		}
 	}()
 

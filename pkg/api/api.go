@@ -39,12 +39,12 @@ func Start(ctx context.Context, mux *http.ServeMux, port int) <-chan struct{} {
 
 func traceIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		traceIDHeader := http.CanonicalHeaderKey(base.TraceIDString)
+		traceIDHeader := http.CanonicalHeaderKey(string(base.TraceID))
 		traceID := r.Header[traceIDHeader]
 		if len(traceID) != 0 {
-			r = r.WithContext(context.WithValue(r.Context(), base.TraceIDString, traceID[0]))
+			r = r.WithContext(context.WithValue(r.Context(), base.TraceID, traceID[0]))
 		} else {
-			r = r.WithContext(context.WithValue(r.Context(), base.TraceIDString, uuid.NewString()))
+			r = r.WithContext(context.WithValue(r.Context(), base.TraceID, "new-trace"+uuid.NewString()))
 		}
 		next.ServeHTTP(w, r)
 	})

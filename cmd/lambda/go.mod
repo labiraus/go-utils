@@ -1,6 +1,6 @@
 module github.com/labiraus/go-utils/cmd/lambda
 
-go 1.24.3
+go 1.25.5
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0

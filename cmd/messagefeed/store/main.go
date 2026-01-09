@@ -37,6 +37,7 @@ func main() {
 	s := grpc.NewServer()
 	types.RegisterStoreServer(s, &store{})
 	reflections.Register(s)
+	s.Serve(lis)
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
